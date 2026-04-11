@@ -1,5 +1,32 @@
 print("Task Manager!")
+
 tasks = []
+
+def save_tasks():
+    with open("tasks.txt", "w") as f:
+        for task in tasks:
+            line = f"{task['title']}|{task['done']}\n"
+            f.write(line)
+
+
+def  load_tasks():
+    global tasks
+
+    try:
+        with open("tasks.txt", "r") as f:
+            tasks = []
+            for line in f:
+                line = line.strip()
+                title, done = line.split("|")
+                tasks.append({
+                    "title": title,
+                    "done": True if done == "True" else False
+                })
+    except FileNotFoundError:
+        tasks = []
+
+load_tasks()
+
 while True:
     print("(1) Add Task. (2) View Tasks. (3) Mark Task as Done. (4) Delete Task. (5) Exit")
     choice = input("Select the function needed: ")
@@ -8,6 +35,7 @@ while True:
             print("Add task selected: ")
             task = input("Add the task you need: ")
             tasks.append({"title": task, "done": False})
+            save_tasks()
             print("Task added successfully!")
         elif choice == "2":
             print("View Tasks selected: ")
@@ -34,9 +62,10 @@ while True:
                     if index >= 0 and index < len(tasks):
                         tasks[index]["done"] = True
                         print("Task marked as done!")
+                        save_tasks()
                     else:
                         print("Invalid task number")
-                except:
+                except ValueError:
                     print("Invalid input")
         elif choice == "4":
             print("Delete Task selected")
@@ -52,7 +81,8 @@ while True:
                     if index >= 0 and index < len(tasks):
                         tasks.pop(index)
                         print("Task deleted successfully!")
-                except:
+                        save_tasks()
+                except ValueError:
                     print("Invalid input")
                     continue
         elif choice == "5":
